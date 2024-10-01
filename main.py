@@ -8,7 +8,7 @@
 import json
 from flask import Flask, request
 
-from api import iplaceData
+from api import iphoneData
 
 app = Flask(__name__)
 
@@ -41,9 +41,9 @@ def iphone_data():
         _type = args.get("type")
 
     if _type == "json":
-        response = json.dumps(iplaceData.getData(imei)).encode("utf-8").decode("utf-8")
+        response = json.dumps(iphoneData.getData(imei)).encode("utf-8").decode("utf-8")
     elif _type == "txt":
-        data = iplaceData.getData(imei).get('data')
+        data = iphoneData.getData(imei).get('data')
         response = "<pre>" \
                    f"IMEI/SN: {data.get('IMEI/SN')}\n" \
                    f"设备型号: {data.get('设备型号')}\n" \
