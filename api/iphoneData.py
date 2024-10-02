@@ -6,6 +6,7 @@
 
 
 from requests import post
+from googletrans import Translator
 
 url = "https://www.iplace.com.br/ccstorex/custom/v1/hervalApiCalls/getData"
 
@@ -35,16 +36,69 @@ headers = {
     "x-requested-with": "XMLHttpRequest"
 }
 
+translater = Translator()
 
 def getData(imei):
-    data = r'{"url":"/buyback/aquisicao/elegibilidade/dispositivo/359888171995975","data":{},"method":"GET"}'
+    data = r'{"url":"/buyback/aquisicao/elegibilidade/dispositivo/'+str(imei)+'","data":{},"method":"GET"}'
 
-    res = post(url=url, data=data, headers=headers, timeout=10)
-
-    print(res.status_code)
+    try:
+        res = post(url=url, data=data, headers=headers, timeout=10)
+    except Exception as e:
+        return {
+            "code": 500,
+            "describe": "request is error",
+            "data": {}
+        }
 
     if res.ok:
         resjoin = res.json()
+
+        color = resjoin.get("cor")
+        if color == "Branco":
+            color = "White"
+        elif color == "Roxo":
+            color = "Purple"
+        elif color == "Preto":
+            color = "Black"
+        elif color == "Titânio":
+            color = "Titanium"
+        elif color == "Estelar":
+            color = "Starlight"
+        elif color =="Cinza Espacial":
+            color = "Space Gray"
+        elif color =="Dourado":
+            color = "Gold"
+        elif color == "Grafite":
+            color = "Graphite"
+        elif color == "Vermelho":
+            color = "Red"
+        elif color == "Azul":
+            color = "Blue"
+        elif color == "Azul Pacífico":
+            color = "Pacific Blue"
+        elif color == "Roxo-Profundo":
+            color = "Deep Purple"
+        elif color == "Preto-Espacial":
+            color = "Space Black"
+        elif color == "Meia-Noite":
+            color = "Midnight"
+        elif color == "Titânio Branco":
+            color = "White Titanium"
+        elif color == "Verde Meia-Noite":
+            color = "Midnight Green"
+        elif color == "Titânio Preto":
+            color = "Black Titanium"
+        elif color == "Prateado":
+            color = "Silver"
+        elif color == "Azul-Sierra":
+            color = "Blue Sierra"
+        elif color == "Verde Alpino":
+            color = "Alpine Green"
+        elif color == "Rosa":
+            color = "Pink"
+        else:
+            color = translater.translate(color, src="es", dest="en").text
+
         response = {
             "code": 200,
             "describe": "",
@@ -52,7 +106,7 @@ def getData(imei):
                 "IMEI/SN": str(imei),
                 "设备型号": resjoin.get("aparelho"),
                 "容量": resjoin.get("capacidade"),
-                "颜色": resjoin.get("cor"),
+                "颜色": color,
             }
         }
     else:

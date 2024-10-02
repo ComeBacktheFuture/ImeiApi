@@ -23,7 +23,7 @@ def api():
     return "None"
 
 
-@app.route("/api/iphone_data")
+@app.route("/api/iphone_data", method=['GET'])
 def iphone_data():
     if request.args is None:
         return "未提供参数"
@@ -55,6 +55,6 @@ def iphone_data():
 
 
 if __name__ == '__main__':
-    app.run(port=10000)
+    app.run(host="0.0.0.0", port=10000)
 
 

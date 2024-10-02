@@ -2,7 +2,7 @@
 
 ## api接口
 
-### ``POST`` ``/api/iphone_data`` 返回手机型号，容量，颜色
+### ``GET`` ``/api/iphone_data`` 返回手机型号，容量，颜色
 
 参数
 - ``type``: 指定返回数据类型
