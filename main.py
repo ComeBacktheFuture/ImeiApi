@@ -6,9 +6,12 @@
 
 
 import json
+from pprint import pformat
 from flask import Flask, request
 
 from api import iphoneData
+from api import GoogleRepairData
+from api import SaltIphoneData
 
 app = Flask(__name__)
 
@@ -23,7 +26,7 @@ def api():
     return "None"
 
 
-@app.route("/api/iphone_data", method=['GET'])
+@app.route("/api/iphone_data")
 def iphone_data():
     if request.args is None:
         return "未提供参数"
@@ -53,8 +56,48 @@ def iphone_data():
 
     return response.encode("utf-8")
 
+@app.route("/api/iphone_repair_data_test")
+def iphone_repair_data_test():
+    if request.args is None:
+        return "未提供参数"
+
+    args: dict = request.args.to_dict()
+
+    if args.get("imei") is None:
+        return "未提供imei"
+    else:
+        imei = args.get("imei")
+
+    data = GoogleRepairData.getData(imei).get('data')
+    text = "\n".join(k + ": " + str(v) for k, v in data.items())
+    response = "<pre>\n" + text + "\n</pre>"
+
+    return response.encode("utf-8")
+
+@app.route("/api/iphone_active_data_test")
+def iphone_active_data_test():
+    if request.args is None:
+        return "未提供参数"
+
+    args: dict = request.args.to_dict()
+
+    if args.get("imei") is None:
+        return "未提供imei"
+    else:
+        imei = args.get("imei")
+
+    response = SaltIphoneData.getData(imei)
+    response = "<pre>\n" + pformat(response) + "\n</pre>"
+
+    return response.encode("utf-8")
+
+
+def init():
+    GoogleRepairData.login(assount="unlockapi6@gmail.com", password="Aa123456@")
+
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=10000)
+    init()
+    app.run(host="0.0.0.0", port=10001)
 
 
