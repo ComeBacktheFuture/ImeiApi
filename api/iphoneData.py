@@ -111,7 +111,7 @@ def getData(imei):
         }
     else:
         response = {
-            "code": 500,
+            "code": res.status_code,
             "describe": "request is error",
             "data": {}
         }

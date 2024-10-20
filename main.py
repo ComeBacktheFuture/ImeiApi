@@ -12,6 +12,7 @@ from flask import Flask, request
 from api import iphoneData
 from api import GoogleRepairData
 from api import SaltIphoneData
+from api import UnlockApi
 
 app = Flask(__name__)
 
@@ -87,9 +88,43 @@ def iphone_active_data_test():
         imei = args.get("imei")
 
     response = SaltIphoneData.getData(imei)
-    response = "<pre>\n" + pformat(response) + "\n</pre>"
+    text = f"IMEI: {response['data']['IMEI']}\nFind My IPhone: {response['data']['Find My IPhone']}\n" \
+           f"iCloudStatus: {response['data']['iCloudStatus']}" if response['code'] == 200 else \
+           f"IMEI: {imei}\nFind My IPhone: None\n" \
+           f"iCloudStatus: None"
+    
+    response = "<pre>\n" + text + "\n</pre>"
 
     return response.encode("utf-8")
+
+@app.route("/api/iphone_unlock_code")
+def iphone_unlock_code():
+    if request.args is None:
+        return "未提供参数"
+
+    args: dict = request.args.to_dict()
+
+    if args.get("imei") is None:
+        return "未提供imei"
+    else:
+        imei = args.get("imei")
+
+    if args.get("type") is None:
+        return "未提供type"
+    else:
+        _type = args.get("type")
+
+    response = UnlockApi.getData(imei)
+
+    if _type == "json":
+        response = json.dumps(response)
+    elif _type == "txt":
+        data = response.get('data')
+        text = "\n".join(k + ": " + str(v) for k, v in data.items())
+        response = "<pre>\n" + text + "\n</pre>"
+
+    return response.encode("utf-8")
+
 
 
 def init():

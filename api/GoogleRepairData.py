@@ -25,7 +25,7 @@ tab = Chromium(addr_or_opts=opt).latest_tab
 
 login_url = r'https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fstore.google.com%2Fus%2Frepair%3Fhl%3Den-US%26pli%3D1&hl=en-US&faa=1&ddm=0&flowName=GlifWebSignIn&flowEntry=AccountChooser'
 repair_url = r'https://store.google.com/us/repair?hl=en-US'
-port_point = "/data/batchexecute"
+port_point = "/data/batchexecute?rpcids=VEV8Hf"
 
 
 def login(assount: str, password: str):
@@ -38,12 +38,12 @@ def login(assount: str, password: str):
 	time.sleep(3)
 
 	password_input = tab.ele("@type=password")
-	assount_input.input(password+"\n", clear=True)
+	password_input.input(password+"\n", clear=True)
 
 	time.sleep(5)
 
 	# 未成功登录检测
-	if "repair" not in tab.url or (not tab.url_available):
+	if "us/repair" not in tab.url or (not tab.url_available):
 		raise Exception(f"账号{assount}登录失败...")
 
 	print(f"账号{assount}登录成功...")
@@ -59,7 +59,7 @@ def getData(imei: str):
 	_input = tab.ele("@tag()=input")
 	_input.input(imei+"\n", clear=True)
 
-	while (res:=tab.listen.wait()) is None:
+	while (res:=tab.listen.wait(timeout=1, raise_err=False)) is False:
 		time.sleep(0.01)
 
 	text = res.response.body
